@@ -1,8 +1,10 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import static frc.robot.utilities.Util.logf;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class PID extends SubsystemBase {
 

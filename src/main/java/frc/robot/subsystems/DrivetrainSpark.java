@@ -5,16 +5,18 @@ import static frc.robot.utilities.Util.logf;
 import static frc.robot.utilities.Util.round2;
 
 //import com.ctre.phoenix.motorcontrol.FeedbackDevice;
- 
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Config.RobotType;
+import frc.robot.Config;
+import frc.robot.Config.DriveType;
 import frc.robot.Robot;
 
-public class Drivetrain extends SubsystemBase {
+public class DrivetrainSpark extends SubsystemBase {
 
     private MotorSpark rightMotor;
     private MotorSpark leftMotor;
@@ -29,7 +31,6 @@ public class Drivetrain extends SubsystemBase {
     private boolean showDriveLog = false;
     private double rightStart = 0;
     private double leftStart = 0;
-    // private PID positionPID;
 
     // Parameters for drive train
     private double rampTime = 1; // Change this value in setAggresiveMode() or setMildMode()
@@ -37,13 +38,21 @@ public class Drivetrain extends SubsystemBase {
     private double intercept = .0; // Offset of the ramp
     private double deadZone = 0.04;
     private boolean turboMode = false;
-    private double sensitivity =0.6;
+    private double sensitivity = 0.6;
+
+    private XboxController driveHID;
+
+    private double rampUp = .05;
+    private double rampUpTurbo = .05;
+    private double rampDown = .05;
+    private double rampDownTurbo = .05;
 
     public DifferentialDriveOdometry odometry;
     Pose2d pose;
     Pose2d lastPose;
 
-    public Drivetrain() {
+    public DrivetrainSpark(XboxController driveHID) {
+        this.driveHID = driveHID;
         rightMotor = new MotorSpark("Right", Robot.config.driveRight, Robot.config.driveRightFollow, true);
         leftMotor = new MotorSpark("Left", Robot.config.driveLeft, Robot.config.driveLeftFollow, true);
         rightMotor.setBrakeMode(brakeMode);
@@ -61,17 +70,6 @@ public class Drivetrain extends SubsystemBase {
         }
         leftMotor.setSensorPhase(true);
         rightMotor.setSensorPhase(false);
-        if (Robot.config.getRobotType() == RobotType.Competition) {
-            // PID for competion robot
-            // positionPID = new PID("Drive", .4, 0, .02, 0, 0, -1, 1, false);
-        } else {
-            // PID for Mini Fast test robot
-            // positionPID = new PID("Drive", 15, 0, 0, 0, 0, -1, 1, false);
-        }
-        // rightMotor.setPositionPID(positionPID,
-        // FeedbackDevice.CTRE_MagEncoder_Relative); // set pid for SRX
-        // eftMotor.setPositionPID(positionPID,
-        // FeedbackDevice.CTRE_MagEncoder_Relative); // set pid for SRX
         rightMotor.setRampOpenLoop(rampTime);
         leftMotor.setRampOpenLoop(rampTime);
     }
@@ -151,23 +149,21 @@ public class Drivetrain extends SubsystemBase {
                 SmartDashboard.putNumber("PoseY", round2(pose.getY()));
             }
         }
-        turboMode = Robot.oi.turboMode();
-        if (Robot.oi.driveStraightPressed()) {
+        if (driveHID.getLeftBumperPressed()) {
             logf("Drive Straight start yaw:%.2f\n", yaw);
             targetAngle = Robot.yaw;
         }
-        if (Robot.oi.driveStraightReleased()) {
+        if (driveHID.getLeftBumperReleased()) {
             logf("Drive Straight finish goal:%.2f yaw:%.2f\n", targetAngle, yaw);
             targetAngle = null;
         }
-        if (Robot.driveArcade) {
+        if (Config.driveType == DriveType.MildArcade || Config.driveType == DriveType.AggressiveArcade) {
             arcadeMode();
             return;
         }
-        
 
-        rightJoy = Robot.oi.rightJoySpeed();
-        leftJoy = Robot.oi.leftJoySpeed();
+        rightJoy = driveHID.getRightX();
+        leftJoy = driveHID.getLeftY();
 
         if (targetAngle != null) {
             // If Drive straight active make adjustments
@@ -217,9 +213,9 @@ public class Drivetrain extends SubsystemBase {
         double factor = error * Math.abs(averageJoy) * 0.035; // Was 0.045
         // Log drive straight data every 2.5 seconds
         if (Robot.count % 12 == 0) {
-            logf("Drive Straight targ:%.2f yaw:%.2f err:%.2f avg:%.2f factor:%.2f Fr Dist:%.2f Joy:<%.2f,%.2f>\n",
+            logf("Drive Straight targ:%.2f yaw:%.2f err:%.2f avg:%.2f factor:%.2f Joy:<%.2f,%.2f>\n",
                     targetAngle, yaw, error,
-                    averageJoy, factor, Robot.frontDistance, rightJoy, leftJoy);
+                    averageJoy, factor, rightJoy, leftJoy);
         }
         leftJoy = averageJoy - factor;
         rightJoy = averageJoy + factor;
@@ -272,15 +268,15 @@ public class Drivetrain extends SubsystemBase {
             return joy;
         if (turboMode) {
             if (joy > speed) {
-                newJoy = speed + Robot.config.rampUp;
+                newJoy = speed + rampUpTurbo;
             } else {
-                newJoy = speed - Robot.config.rampDown;
+                newJoy = speed - rampDownTurbo;
             }
         } else {
             if (joy > speed) {
-                newJoy = speed + Robot.config.rampUp;
+                newJoy = speed + rampUp;
             } else {
-                newJoy = speed - Robot.config.rampDown;
+                newJoy = speed - rampDown;
             }
         }
         // Log ramp data if it changed -- only do for right motor to avoid lots of logs
@@ -351,12 +347,12 @@ public class Drivetrain extends SubsystemBase {
     }
 
     private void arcadeMode() {
-        double yValue = Joysticks.operator.getRawAxis(1) * -1;
-        double xValue = Joysticks.operator.getRawAxis(4) * -1;
+        double yValue = driveHID.getLeftY() * -1;
+        double xValue = driveHID.getLeftX() * -1;
 
         yValue = correctForDeadZone(yValue);
         xValue = correctForDeadZone(xValue);
-        
+
         yValue *= sensitivity;
         xValue *= sensitivity;
 

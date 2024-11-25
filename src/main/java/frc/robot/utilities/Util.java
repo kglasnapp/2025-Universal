@@ -33,7 +33,7 @@ public class Util {
     }
 
     public static void loginfo(String pattern, Object... arguments) {
-        if (Robot.logging)
+        if (Robot.debug)
             logf(pattern, arguments);
     }
 

@@ -4,9 +4,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Config;
 import frc.robot.Robot;
 import frc.robot.Config.RobotType;
-import frc.robot.utilities.Util;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.utilities.Timeout;
+import frc.robot.utilities.Util;
 
 /**
  * An example command. You can replace me with your own command.

@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import static frc.robot.utilities.Util.logf;
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkLimitSwitch;
@@ -14,8 +12,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.utilities.Util;
 
-import static frc.robot.utilities.Util.round2;
 import static frc.robot.Robot.count;
+import static frc.robot.utilities.Util.logf;
+import static frc.robot.utilities.Util.round2;
+
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 

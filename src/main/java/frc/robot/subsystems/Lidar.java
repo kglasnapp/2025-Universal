@@ -40,7 +40,7 @@ public class Lidar extends SubsystemBase {
     public void periodic() {
         // If Lidar is not in range of field consider it invalid
         lidarValid = distFeet > 1 && distFeet < 35;
-        if (Robot.count % 15 == 2 && Robot.config.ShowOnSmart) {
+        if (Robot.count % 15 == 2 && Robot.config.lidar) {
             SmartDashboard.putNumber("Lidar (feet)", Util.round2(distFeet));
             SmartDashboard.putBoolean("LidarValid", lidarValid);
 

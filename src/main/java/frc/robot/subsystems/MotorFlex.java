@@ -32,7 +32,7 @@ import frc.robot.Robot;
  *
  */
 
-public class MotorFlex extends SubsystemBase implements MotorDef{
+public class MotorFlex extends SubsystemBase implements MotorDef {
     private SparkFlex motor;
     private SparkFlex followMotor;
     private String name;
@@ -84,51 +84,55 @@ public class MotorFlex extends SubsystemBase implements MotorDef{
                     motor.getFirmwareString());
     }
 
+    public void enableLimitSwitch(boolean forward, boolean reverse) {
+    };
 
-
-
-
-    public void enableLimitSwitch(boolean forward, boolean reverse) {};
-
-    public void setInverted(boolean invert){};
-
+    public void setInverted(boolean invert) {
+    };
 
     public double getActualVelocity() {
         return 0.0;
     };
 
-    public void forcePercentMode() {};
+    public void forcePercentMode() {
+    };
 
     /*
      * Peak Current and Duration must be exceeded before current limit is activated.
      * When activated, current will be limited to Continuous Current. Set Peak
      * Current params to 0 if desired behavior is to immediately current-limit.
      */
-    public void setCurrentLimit(int peakAmps, int continousAmps, int durationMilliseconds) {};
+    public void setCurrentLimit(int peakAmps, int continousAmps, int durationMilliseconds) {
+    };
 
-    public void updateSmart() {};
+    public void updateSmart() {
+    };
 
-    public void setSpeedAbsolute(double speed) {};
+    public void setSpeedAbsolute(double speed) {
+    };
 
+    public void setVelocityPID(PID pid) {
+    };
 
-    public void setVelocityPID(PID pid) {};
+    public void PIDToMotor(PID pid, int slot, int timeout) {
+    };
 
-
-    public void PIDToMotor(PID pid, int slot, int timeout) {};
-
-  
     public String getMotorVCS() {
         return "";
     };
 
-    public void setSensorPhase(boolean phase)  {};
+    public void setSensorPhase(boolean phase) {
+    };
 
     // Config the sensor used for Primary PID and sensor direction
-    public void setPositionPID(int pidIdx, PID pid) {};
+    public void setPositionPID(int pidIdx, PID pid) {
+    };
 
-    public void setRampClosedLoop(double rate) {};
+    public void setRampClosedLoop(double rate) {
+    };
 
-    public void setRampOpenLoop(double rate) {};
+    public void setRampOpenLoop(double rate) {
+    };
 
     @SuppressWarnings("removal")
     void setConfig(SparkFlex motor, int followID, MotorConfigs motorC) {
@@ -144,7 +148,7 @@ public class MotorFlex extends SubsystemBase implements MotorDef{
         config.limitSwitch.reverseLimitSwitchEnabled(motorC.reverseLimit);
         config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
         config.closedLoop.pidf(motorC.kP, motorC.kI, motorC.kD, motorC.kFF);
-        //config.closedLoop.maxOutput(motorC.maxOutput);
+        // config.closedLoop.maxOutput(motorC.maxOutput);
         config.closedLoop.smartMotion.maxVelocity(motorC.maxVelocity);
         config.closedLoop.smartMotion.maxAcceleration(motorC.maxAcceration);
         config.closedLoop.maxMotion.maxVelocity(motorC.maxVelocity);
@@ -164,7 +168,7 @@ public class MotorFlex extends SubsystemBase implements MotorDef{
     }
 
     public double getErrorPID() {
-        //return motor.getClosedLoopController().
+        // return motor.getClosedLoopController().
         return 0;
     }
 
@@ -205,8 +209,9 @@ public class MotorFlex extends SubsystemBase implements MotorDef{
 
     public void setPos(double position) {
         lastDesiredPosition = position;
-        logf("-------- Set motor %s at %.1f ticks\n", name, lastDesiredPosition);
-       // motor.getClosedLoopController().setReference(position, ControlType.kMAXMotionPositionControl);
+        // logf("-------- Set motor %s at %.1f ticks\n", name, lastDesiredPosition);
+        // motor.getClosedLoopController().setReference(position,
+        // ControlType.kMAXMotionPositionControl);
         motor.getClosedLoopController().setReference(position, motorC.controlType);
     }
 

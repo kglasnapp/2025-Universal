@@ -10,11 +10,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Config.RobotType;
 import frc.robot.subsystems.DrivetrainSRX;
 import frc.robot.subsystems.LedSubsystem;
-import frc.robot.subsystems.MotorDef;
-import frc.robot.subsystems.MotorSRX;
-import frc.robot.subsystems.TestMotors;
+import frc.robot.subsystems.TestMiniMotors;
+import frc.robot.subsystems.TestBlondeMotors;
+import frc.robot.subsystems.TestSlider;
 //import frc.robot.subsystems.YawProvider;
 import frc.robot.subsystems.TestTriggers;
 
@@ -32,10 +33,12 @@ public class RobotContainer {
     private final static CommandXboxController operatorController = new CommandXboxController(3);
     private final static XboxController operatorHID = operatorController.getHID();
     private final static XboxController driveHID = driveController.getHID();
-   
+
     private static LedSubsystem leds = new LedSubsystem();
     public DrivetrainSRX drivetrainSRX;
-    public TestMotors testMotors;
+    public TestMiniMotors testMiniMotors;
+    public TestBlondeMotors testblondeMotors;
+
     private TestTriggers triggers = new TestTriggers();
 
     /**
@@ -44,11 +47,18 @@ public class RobotContainer {
     public RobotContainer() {
         // Set the default Robot Mode to Cube
         switch (Config.robotType) {
+            case Simulation:
+                break;
+            case blondeMini:
+                 new DrivetrainSRX(driveHID);
+                // new TestblondeMotors(driveHID, leds);
+                new TestSlider(driveHID, leds);
+                break;
             case MiniSRX: // Test mini
                 // Use Talon SRX for drive train
                 drivetrainSRX = new DrivetrainSRX(driveHID);
-                MotorDef motor = new MotorSRX(null, 0, 0, false);
-                testMotors = new TestMotors(motor, driveHID, leds);
+                // MotorDef motor = new MotorSRX(null, 0, 0, false);
+                this.testMiniMotors = new TestMiniMotors(driveHID, leds);
                 leds.setColors(0, 128, 0);
                 break;
             case Squidward: // Holiday Present Robot
@@ -66,19 +76,25 @@ public class RobotContainer {
                 break;
         }
         logf("Creating RobotContainer\n");
-        configureButtonBindings();
+        if (Config.robotType != RobotType.Simulation) {
+            configureButtonBindings();
+        }
+    }
+
+    public void testLeds() {
+        leds.setColors(0, 127, 0);
     }
 
     public double squareWithSign(double v) {
         return (v < 0) ? -(v * v) : (v * v);
     }
 
-    Command zy = new InstantCommand(new Runnable() {
-        public void run() {
-            Robot.yawProvider.zeroYaw();
-            testMotors.resetPos();
-        }
-    });
+    // Command zy = new InstantCommand(new Runnable() {
+    // public void run() {
+    // Robot.yawProvider.zeroYaw();
+    // testMotors.resetPos();
+    // }
+    // });
 
     Command testCmd = new InstantCommand(new Runnable() {
         public void run() {
@@ -103,7 +119,7 @@ public class RobotContainer {
                 logf("Hit back on Game Pad\n");
             }
         }));
-        driveController.start().onTrue(zy);
+        // driveController.start().onTrue(zy);
         tr.onTrue(testTrigger);
     }
 
@@ -119,5 +135,4 @@ public class RobotContainer {
             logf("Input Changed:%b\n", input.get());
         }
     }
-
 }

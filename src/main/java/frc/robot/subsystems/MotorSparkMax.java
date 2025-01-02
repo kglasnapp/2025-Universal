@@ -168,7 +168,7 @@ public class MotorSparkMax extends SubsystemBase {
 
     public void setPos(double position) {
         lastDesiredPosition = position;
-        logf("-------- Set motor %s at %.1f ticks\n", name, lastDesiredPosition);
+        // logf("-------- Set motor %s at %.1f ticks\n", name, lastDesiredPosition);
        // motor.getClosedLoopController().setReference(position, .kMAXMotionPositionControl);
         motor.getClosedLoopController().setReference(position, motorC.controlType );
     }

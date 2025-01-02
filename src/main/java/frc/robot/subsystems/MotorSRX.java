@@ -21,7 +21,7 @@ import frc.robot.Robot;
 // It should also change the direction reported for "PID0" in a self-test snapshot, 
 // but not the position reported by "Quad/MagEnc(rel)" 
 
-public class MotorSRX  extends SubsystemBase implements MotorDef { 
+public class MotorSRX extends SubsystemBase implements MotorDef {
     private TalonSRX motor;
     private TalonSRX followMotor;
     private String name;
@@ -32,7 +32,7 @@ public class MotorSRX  extends SubsystemBase implements MotorDef {
     private boolean myLogging = false;
     private ErrorCode errorCode;
     private boolean sensorPhase = false;
-    //private boolean motorInvert = false;
+    // private boolean motorInvert = false;
     private FeedbackDevice feedBackDevice = FeedbackDevice.QuadEncoder;
 
     public MotorSRX(String name, int id, int followId, boolean logging) {
@@ -54,7 +54,7 @@ public class MotorSRX  extends SubsystemBase implements MotorDef {
                 followId = -followId;
             }
         }
-motor.getSensorCollection().getQuadraturePosition();
+        motor.getSensorCollection().getQuadraturePosition();
         motor.getSensorCollection().setQuadraturePosition(0, 0);
         if (followId > 0)
             logf("Created %s motor ids:<%d,%d> firmware:<%d,%d> voltage:<%.1f,%.1f>\n", name, id, followId,
@@ -72,12 +72,12 @@ motor.getSensorCollection().getQuadraturePosition();
 
     public void enableLimitSwitch(boolean forward, boolean reverse) {
         if (forward)
-            motor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
+            motor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
         if (reverse)
-            motor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
+            motor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
     }
 
-    public boolean getForwardLimitSwitch()  {
+    public boolean getForwardLimitSwitch() {
         return motor.getSensorCollection().isFwdLimitSwitchClosed();
     }
 
@@ -85,7 +85,7 @@ motor.getSensorCollection().getQuadraturePosition();
         return motor.getSensorCollection().isRevLimitSwitchClosed();
     }
 
-    public  void setBrakeMode(boolean mode) {
+    public void setBrakeMode(boolean mode) {
         motor.setNeutralMode(mode ? NeutralMode.Brake : NeutralMode.Coast);
         if (followId > 0)
             followMotor.setNeutralMode(mode ? NeutralMode.Brake : NeutralMode.Coast);
@@ -115,6 +115,10 @@ motor.getSensorCollection().getQuadraturePosition();
         return motor.getSelectedSensorVelocity(0);
     }
 
+    public int getAnalogPos() {
+        return motor.getSensorCollection().getAnalogIn() + 4096 - 1078;
+    }
+
     public void periodic() {
         if (!Robot.config.showMotorData)
             return;
@@ -126,10 +130,10 @@ motor.getSensorCollection().getQuadraturePosition();
     }
 
     public void logPeriodic() {
-        if(!myLogging) {
+        if (!myLogging) {
             return;
         }
-       double pos = motor.getSensorCollection().getQuadraturePosition();
+        double pos = motor.getSensorCollection().getQuadraturePosition();
         if (pos != lastPos) {
             lastPos = pos;
             if (myLogging) {
@@ -167,7 +171,7 @@ motor.getSensorCollection().getQuadraturePosition();
     }
 
     public void setSpeed(double speed) {
-        if(speed == 0.0){
+        if (speed == 0.0) {
             motor.set(ControlMode.PercentOutput, 0);
         }
         if (speed != lastSpeed) {
@@ -197,7 +201,7 @@ motor.getSensorCollection().getQuadraturePosition();
     public void setPositionPID(PID pid, FeedbackDevice feedBack) {
         feedBackDevice = feedBack;
         setPositionPID(0, pid);
-        PIDToMotor( pid, 0, Robot.config.kTimeoutMs);
+        PIDToMotor(pid, 0, Robot.config.kTimeoutMs);
     }
 
     public void forcePercentMode() {
@@ -208,7 +212,7 @@ motor.getSensorCollection().getQuadraturePosition();
         PIDToMotor(pid, 0, Robot.config.kTimeoutMs);
     }
 
-    public  double getMotorVoltage() {
+    public double getMotorVoltage() {
         return motor.getMotorOutputVoltage();
     }
 
@@ -216,7 +220,7 @@ motor.getSensorCollection().getQuadraturePosition();
         return motor.getBusVoltage();
     }
 
-    public void PIDToMotor( PID pid, int slot, int timeout) {
+    public void PIDToMotor(PID pid, int slot, int timeout) {
         motor.config_kP(slot, pid.kP, timeout);
         motor.config_kI(slot, pid.kI, timeout);
         motor.config_kD(slot, pid.kD, timeout);
@@ -267,7 +271,7 @@ motor.getSensorCollection().getQuadraturePosition();
         if (followMotor == null) {
             return 0;
         }
-    
+
         return followMotor.getStatorCurrent();
     }
 
@@ -276,29 +280,29 @@ motor.getSensorCollection().getQuadraturePosition();
         motor.setSensorPhase(phase);
     }
 
-    public  void setPositionPID( int pidIdx, PID pid) {
+    public void setPositionPID(int pidIdx, PID pid) {
         // Config the sensor used for Primary PID and sensor direction
         motor.configSelectedFeedbackSensor(feedBackDevice, pidIdx, Robot.config.kTimeoutMs);
 
         // Ensure sensor is positive when output is positive
-       motor.setSensorPhase(sensorPhase);
+        motor.setSensorPhase(sensorPhase);
 
         // Set based on what direction you want forward/positive to be.
         // This does not affect sensor phase.
-       //motor.setInverted(motorInvert);
+        // motor.setInverted(motorInvert);
 
         /* Config the peak and nominal outputs, 12V means full */
-       motor.configNominalOutputForward(0, Robot.config.kTimeoutMs);
-       motor.configNominalOutputReverse(0, Robot.config.kTimeoutMs);
-       motor.configPeakOutputForward(pid.kMaxOutput, Robot.config.kTimeoutMs);
-       motor.configPeakOutputReverse(pid.kMinOutput, Robot.config.kTimeoutMs);
+        motor.configNominalOutputForward(0, Robot.config.kTimeoutMs);
+        motor.configNominalOutputReverse(0, Robot.config.kTimeoutMs);
+        motor.configPeakOutputForward(pid.kMaxOutput, Robot.config.kTimeoutMs);
+        motor.configPeakOutputReverse(pid.kMinOutput, Robot.config.kTimeoutMs);
 
         // Config the allowable closed-loop error, Closed-Loop output will be neutral
         // within this range. See Table in Section 17.2.1 for native units per rotation.
-       motor.configAllowableClosedloopError(0, pidIdx, Robot.config.kTimeoutMs);
+        motor.configAllowableClosedloopError(0, pidIdx, Robot.config.kTimeoutMs);
     }
 
-    public  void setRampClosedLoop(double rate) {
+    public void setRampClosedLoop(double rate) {
         // Rate is secondsFromNeutralToFull
         motor.configClosedloopRamp(rate);
     }

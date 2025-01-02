@@ -93,6 +93,8 @@ public class MotorFX extends SubsystemBase implements MotorDef {
         return motor.getRotorPosition().getValueAsDouble();
     }
 
+
+   
     public void enableLimitSwitch(boolean forward, boolean reverse) {
         // if (forward)
         // motor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector,

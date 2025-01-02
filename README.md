@@ -20,4 +20,18 @@
 * git remote show origin -- show remote url
 * git remote remove origin -- delete remote url
 
+# 2025 WPI changes
 
+* [2025 Change Log](https://docs.wpilib.org/es/latest/docs/yearly-overview/yearly-changelog.html)
+
+ * [software for 2025](https://docs.wpilib.org/en/latest/docs/zero-to-robot/step-2/wpilib-setup.html)
+
+
+ * [FRC 2025 Documents](https://docs.wpilib.org/en/latest/)
+ 
+* [GIT HUB 2025](https://github.com/wpilibsuite/2025Beta)
+
+<file:///C:/Users/Public/wpilib/2025/documentation/rtd/frc-docs-latest/index.html#document-docs/controls-overviews/control-system-software>
+
+
+[Log Data format](https://github.com/wpilibsuite/allwpilib/blob/main/wpiutil/doc/datalog.adoc)

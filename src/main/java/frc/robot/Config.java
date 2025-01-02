@@ -10,11 +10,11 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 public class Config {
     public enum RobotType {
-        MiniSRX, Squidward, Kevin, Wooly, Mando
+        MiniSRX, blondeMini, Squidward, Kevin, Wooly, Mando, Simulation
     };
 
     // Type of Robot
-    public static RobotType robotType = RobotType.MiniSRX;
+    public static RobotType robotType = RobotType.blondeMini;
 
     // Pneumatic Control Modules Parameters
     public int pcmHubID = -1;
@@ -75,6 +75,13 @@ public class Config {
         // MiniSRX, Squidward, Kevin, Wooly, Mando
         logf("Start of Robot Config for %s\n", robotType);
         switch (robotType) {
+            case Simulation:
+                break;
+            case blondeMini:
+                // Use Talon SRX for drive train
+                driveLeftFollow = -1;
+                driveRightFollow = -1;
+                break;
             case MiniSRX: // Test mini
                 // Use Talon SRX for drive train
                 driveLeftFollow = -1;

@@ -27,7 +27,7 @@ public class YawProvider extends SubsystemBase {
 // See https://github.com/Studica-Robotics/NavX for information on 2025 Navx
 
   public YawProvider() {
-    ahrs = new AHRS(AHRS.NavXComType.kMXP_SPI);
+    ahrs = new AHRS(AHRS.NavXComType.kMXP_SPI, 50);
     an_in_0 = new AnalogInput(getChannelFromPin(PinType.AnalogIn, 0));
     an_in_1 = new AnalogInput(getChannelFromPin(PinType.AnalogIn, 1));
   }

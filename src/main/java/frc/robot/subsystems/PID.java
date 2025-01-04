@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 
 import static frc.robot.utilities.Util.logf;
 
@@ -70,9 +71,13 @@ public class PID extends SubsystemBase {
 
   @Override
   public void periodic() {
-    smart = false;  // todo fix at some point
-    if (smart)
+    //smart = false;  // todo fix at some point
+    if (smart) {
       PIDChanged = updatePID();
+      if(PIDChanged) {
+        showPID();
+      }
+    }
   }
 
   public String getPidData() {
@@ -105,6 +110,7 @@ public class PID extends SubsystemBase {
 
   private boolean updatePID() {
     boolean change = false;
+    
     if (smart) {
       // read PID coefficients from SmartDashboard
       double p = SmartDashboard.getNumber("P Gain", 0);

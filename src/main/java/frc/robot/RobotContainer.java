@@ -30,8 +30,8 @@ import frc.robot.subsystems.TestTriggers;
  */
 public class RobotContainer {
     private final static CommandXboxController driveController = new CommandXboxController(2);
-    private final static CommandXboxController operatorController = new CommandXboxController(3);
-    private final static XboxController operatorHID = operatorController.getHID();
+    //private final static CommandXboxController operatorController = new CommandXboxController(3);
+    //private final static XboxController operatorHID = operatorController.getHID();
     private final static XboxController driveHID = driveController.getHID();
 
     private static LedSubsystem leds = new LedSubsystem();
@@ -111,7 +111,7 @@ public class RobotContainer {
     Trigger tr = new Trigger(triggers::getSwitch);
 
     private void configureButtonBindings() {
-        operatorHID.getAButton(); // Avoids a not used problem
+        //operatorHID.getAButton(); // Avoids a not used problem
         driveController.x().onTrue(testCmd);
         driveController.back().whileTrue(new InstantCommand(new Runnable() {
             public void run() {

@@ -31,8 +31,6 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
     private double lastPos = 0;
     private boolean myLogging = false;
     private ErrorCode errorCode;
-    private boolean sensorPhase = false;
-    // private boolean motorInvert = false;
     private FeedbackDevice feedBackDevice = FeedbackDevice.QuadEncoder;
 
     public MotorSRX(String name, int id, int followId, boolean logging) {
@@ -54,7 +52,7 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
                 followId = -followId;
             }
         }
-        motor.getSensorCollection().getQuadraturePosition();
+        motor.setSensorPhase(true);
         motor.getSensorCollection().setQuadraturePosition(0, 0);
         if (followId > 0)
             logf("Created %s motor ids:<%d,%d> firmware:<%d,%d> voltage:<%.1f,%.1f>\n", name, id, followId,
@@ -96,7 +94,7 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
     }
 
     public void setVelocity(double velocity) {
-        // logf("!!!! Set Velocity for %s to %.0f\n", name, velocity);
+        //logf("!!!! Set Velocity for %s to %.0f\n", name, velocity);
         motor.set(ControlMode.Velocity, velocity);
     }
 
@@ -276,7 +274,6 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
     }
 
     public void setSensorPhase(boolean phase) {
-        sensorPhase = phase;
         motor.setSensorPhase(phase);
     }
 
@@ -285,7 +282,7 @@ public class MotorSRX extends SubsystemBase implements MotorDef {
         motor.configSelectedFeedbackSensor(feedBackDevice, pidIdx, Robot.config.kTimeoutMs);
 
         // Ensure sensor is positive when output is positive
-        motor.setSensorPhase(sensorPhase);
+        // motor.setSensorPhase(sensorPhase);
 
         // Set based on what direction you want forward/positive to be.
         // This does not affect sensor phase.

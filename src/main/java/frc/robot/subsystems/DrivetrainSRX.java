@@ -22,6 +22,7 @@ public class DrivetrainSRX extends SubsystemBase {
   XboxController driveController;
   private static SlewRateLimiter sLX = new SlewRateLimiter(DrivetrainSRX.MAX_VELOCITY_METERS_PER_SECOND);
   private static SlewRateLimiter sLY = new SlewRateLimiter(DrivetrainSRX.MAX_VELOCITY_METERS_PER_SECOND);
+  private Double targetAngle = null;
 
   public DrivetrainSRX(XboxController driveController) {
     
@@ -48,5 +49,37 @@ public class DrivetrainSRX extends SubsystemBase {
     SmartDashboard.putNumber("Right Stick", rightStick);
     SmartDashboard.putNumber("Left Stick", leftStick);
   }
+
+  void driveStraight(double rightJoy, double leftJoy) {
+    double error = Robot.yaw - targetAngle;
+    if (error > 10) {
+        logf("!!!!! Drive Straight error too positive diff:%.1f yaw:%.1f target:%.3f\n", error,
+                Robot.yaw, targetAngle);
+        error = 5;
+    }
+    if (error < -10) {
+        logf("!!!!! Drive Straight error too negative diff:%.1f yaw:%.1f target:%.3f\n", error,
+                Robot.yaw, targetAngle);
+        error = -5;
+    }
+    // Adjsut speed if too fast
+    double averageJoy = (rightJoy + leftJoy) / 1.0;
+    // If turbo mode ignore speed limit
+    // if (!turboMode) {
+    // if (averageJoy > .6)
+    // averageJoy = .6;
+    // if (averageJoy < -.6)
+    // averageJoy = -.6;
+    // }
+    double factor = error * Math.abs(averageJoy) * 0.035; // Was 0.045
+    // Log drive straight data every 2.5 seconds
+    if (Robot.count % 12 == 0) {
+        logf("Drive Straight targ:%.2f yaw:%.2f err:%.2f avg:%.2f factor:%.2f Joy:<%.2f,%.2f>\n",
+                targetAngle, Robot.yaw, error,
+                averageJoy, factor,  rightJoy, leftJoy);
+    }
+    leftJoy = averageJoy - factor;
+    rightJoy = averageJoy + factor;
+}
 
 }

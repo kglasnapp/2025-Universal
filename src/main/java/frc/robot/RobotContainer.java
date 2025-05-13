@@ -26,6 +26,7 @@ import frc.robot.platforms.BlondeMini;
 import frc.robot.platforms.MiniMini;
 import frc.robot.platforms.ParadeSrxDriveRobots;
 import frc.robot.platforms.RobotRunnable;
+import frc.robot.platforms.Sibling2025;
 import frc.robot.subsystems.DrivetrainJaguar;
 import frc.robot.subsystems.DrivetrainSRX;
 import frc.robot.subsystems.DrivetrainSpark;
@@ -156,14 +157,10 @@ public class RobotContainer {
         leftxToLeds.ignoringDisable(true).schedule();
         break;
       case Squidward:
-      runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID, "Squidward"));
-      
-        // Uses Talon SRX for drive train())
+        runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID, "Squidward"));
         break;
       case Kevin: // Ginger Bread Robot
-        // Uses Talon SRX for drive train
-       
-      runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID, "Kevin"));
+        runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID, "Kevin"));
         break;
       case Wooly: // Big ball shooter
         // Uses Jaguars for drive train and shooter
@@ -178,7 +175,7 @@ public class RobotContainer {
         new DrivetrainSpark(driveHID);
         break;
       case Sibling2025:
-        new DrivetrainTestSwerve(driveHID);
+        runnableRobot = Optional.of(new Sibling2025(driveHID));
         break;
     }
     logf("Finished Creating RobotContainer\n");

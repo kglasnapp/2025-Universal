@@ -128,14 +128,13 @@ public class RobotContainer {
       case Simulation:
         break;
       case BlondeMini:
-       runnableRobot = Optional.of(new BlondeMini(driveHID));
+        runnableRobot = Optional.of(new BlondeMini(driveHID));
         break;
       case DarrylMini:
         runnableRobot = Optional.of(new DarrylMini());
         break;
       case MiniMini:
-        runnableRobot = Optional.of(new MiniMini(3, 10, driveController));
-
+        runnableRobot = Optional.of(new MiniMini(driveController));
         break;
       case MiniKeith: // Test mini
         runnableRobot = Optional.of(new MiniKeith(driveController));

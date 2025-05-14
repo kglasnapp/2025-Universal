@@ -22,10 +22,13 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Config.RobotType;
 import frc.robot.platforms.DarrylMini;
+import frc.robot.platforms.Mando;
+import frc.robot.platforms.MiniKeith;
 import frc.robot.platforms.BlondeMini;
 import frc.robot.platforms.MiniMini;
 import frc.robot.platforms.ParadeSrxDriveRobots;
 import frc.robot.platforms.RobotRunnable;
+import frc.robot.platforms.Sibling2025;
 import frc.robot.subsystems.DrivetrainJaguar;
 import frc.robot.subsystems.DrivetrainSRX;
 import frc.robot.subsystems.DrivetrainSpark;
@@ -125,45 +128,22 @@ public class RobotContainer {
       case Simulation:
         break;
       case BlondeMini:
-       runnableRobot = Optional.of(new BlondeMini(driveHID));
+        runnableRobot = Optional.of(new BlondeMini(driveHID));
         break;
       case DarrylMini:
         runnableRobot = Optional.of(new DarrylMini());
         break;
       case MiniMini:
-        runnableRobot = Optional.of(new MiniMini(3, 10, driveController));
-
+        runnableRobot = Optional.of(new MiniMini(driveController));
         break;
       case MiniKeith: // Test mini
-        // Use Talon SRX for drive train
-        drivetrainSRX = new DrivetrainSRX(driveHID);
-        // Setup to test Flex Motor
-        motorFlex = new MotorFlex("Flex", 10, -1, false);
-        motorSparkMax = new MotorSparkMax("SmartMax", 11, -1, false, false);
-        motorKraken = new MotorKraken("Kraken", 16, -1, true);
-        motorSRX = new MotorSRX("SRX", 14, 0, true);
-        motorSRX.setupForTestCasesRedMotor();
-        setMotorForTest();
-       // Code to display CANCoder value
-        canCoder = new CANcoder(20);
-        Command miniCancoder = Commands.run(
-            () -> SmartDashboard.putNumber("CanCo", canCoder.getPosition().getValueAsDouble()));
-        miniCancoder.ignoringDisable(true).schedule();
-         
-        // Code to have leds reflect value of LeftX
-        Command leftxToLeds = Commands.run(
-          () -> setLedsLeftX());
-        leftxToLeds.ignoringDisable(true).schedule();
+        runnableRobot = Optional.of(new MiniKeith(driveController));
         break;
       case Squidward:
-      runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID, "Squidward"));
-      
-        // Uses Talon SRX for drive train())
+        runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID, "Squidward"));
         break;
       case Kevin: // Ginger Bread Robot
-        // Uses Talon SRX for drive train
-       
-      runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID, "Kevin"));
+        runnableRobot = Optional.of(new ParadeSrxDriveRobots(driveHID, "Kevin"));
         break;
       case Wooly: // Big ball shooter
         // Uses Jaguars for drive train and shooter
@@ -174,11 +154,10 @@ public class RobotContainer {
         new DrivetrainJaguar(driveHID);
         break;
       case Mando: // Train engine
-        // Use SparkMax motors for drive train
-        new DrivetrainSpark(driveHID);
+        runnableRobot = Optional.of(new Mando(driveHID));
         break;
       case Sibling2025:
-        new DrivetrainTestSwerve(driveHID);
+        runnableRobot = Optional.of(new Sibling2025(driveHID));
         break;
     }
     logf("Finished Creating RobotContainer\n");
@@ -188,40 +167,16 @@ public class RobotContainer {
     SmartDashboard.putData("UpdatePID", hit);
   }
 
-  public static void setLedsForTestMode(int index, int number) {
-    leds.setRangeOfColor(0, number, 0, 0, 0);
-    leds.setRangeOfColor(0, index, 0, 50, 0);
-  }
-
-  public double getSpeedFromTriggers() {
-    double leftValue = driveController.getLeftTriggerAxis();
-    double rightValue = driveController.getRightTriggerAxis();
-    if (leftValue > 0.05) {
-      return leftValue;
-    }
-    if (rightValue > 0.05) {
-      return -rightValue;
-    }
-    return 0.0;
-  }
-
   // Play with string encoder
   AnalogInput analog = new AnalogInput(3);
 
-  public void setLedsForStringEncoder() {
-    int v = (int) driveController.getHID().getPOV() / 4;
-    leds.setOneLed(6, v, v, v);
-    SmartDashboard.putNumber("Volts", analog.getVoltage());
-    SmartDashboard.putNumber("Value", analog.getValue());
-  }
-
-  public void setLedsLeftX() {
-      int num = Config.numberOfLeds - 6;
-      double value = RobotContainer.driveController.getLeftX();
-      if (value < 0.0)
-        value = 0.0;
-      leds.setRangeOfColor(6, (int) (value * num), num, 0, 127, 0);
-  }
+  // TODO: Not used. Remove?
+  // public void setLedsForStringEncoder() {
+  //   int v = (int) driveController.getHID().getPOV() / 4;
+  //   leds.setOneLed(6, v, v, v);
+  //   SmartDashboard.putNumber("Volts", analog.getVoltage());
+  //   SmartDashboard.putNumber("Value", analog.getValue());
+  // }
 
   // Command h = Commands.run(() -> logf("Hit\f"));
 
@@ -321,12 +276,12 @@ public class RobotContainer {
   // Creates a Debouncer in "both" mode.
   Debouncer m_debouncer = new Debouncer(0.1, Debouncer.DebounceType.kBoth);
 
-  void deB() {
-    // If false the signal must go true for at least .1 seconds before read
-    if (m_debouncer.calculate(input.get())) {
-      logf("Input Changed:%b\n", input.get());
-    }
-  }
+  // void deB() {
+  //   // If false the signal must go true for at least .1 seconds before read
+  //   if (m_debouncer.calculate(input.get())) {
+  //     logf("Input Changed:%b\n", input.get());
+  //   }
+  // }
 
   public Optional<RobotRunnable> robot() { return runnableRobot; }
 }
